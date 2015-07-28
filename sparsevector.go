@@ -96,6 +96,63 @@ func (sv1 *SparseVectorUint32) Dot(sv2in Vector) Value {
 	return dp
 }
 
+func (sv1 *SparseVectorUint32) Add(sv2in Vector) *SparseVectorUint32 {
+	sv2 := sv2in.(*SparseVectorUint32)
+
+	var i1, i2 int
+	sv1l := len(sv1.indices)
+	sv2l := len(sv2.indices)
+
+	// Our output vectors are at least as long as our longest input
+	l := sv1l
+	if sv2l > l {
+		l = sv2l
+	}
+	oi := make([]uint32, 0, l)
+	ov := make([]Value, 0, l)
+
+	for {
+		var sv1i, sv2i uint32
+		if i1 < sv1l {
+			sv1i = sv1.indices[i1]
+		} else {
+			// sv1 exhausted - make sure we take from sv2
+			sv1i = math.MaxUint32
+		}
+		if i2 < sv2l {
+			sv2i = sv2.indices[i2]
+		} else {
+			// sv2 exhausted - make sure we take from sv1
+			sv2i = math.MaxUint32
+			if sv1i == math.MaxUint32 {
+				break // both exhausted
+			}
+		}
+
+		if sv1i < sv2i {
+			oi = append(oi, sv1i)
+			ov = append(ov, sv1.values[i1])
+			i1 += 1
+
+		} else if sv2i < sv1i {
+			oi = append(oi, sv2i)
+			ov = append(ov, sv2.values[i2])
+			i2 += 1
+
+		} else {
+			oi = append(oi, sv2i)
+			ov = append(ov, sv2.values[i2]+sv1.values[i1])
+			i1 += 1
+			i2 += 1
+		}
+	}
+	// The vector should already be sorted
+	return &SparseVectorUint32{
+		indices: oi,
+		values:  ov,
+	}
+}
+
 // Cos calculates the cosine of the angle between this sparse vector
 // and another.
 func (sv1 *SparseVectorUint32) Cos(sv2 Vector) Value {
