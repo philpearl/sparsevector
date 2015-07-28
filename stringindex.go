@@ -1,5 +1,6 @@
 package sparsevector
 
+// StringIndex is an implementation of VectorIndex for string.
 type StringIndex []string
 
 func (si StringIndex) Len() int      { return len(si) }
@@ -9,10 +10,7 @@ func (si StringIndex) Less(i, j int) bool {
 }
 
 func (si StringIndex) LessThanOther(i int, sii2 VectorIndex, j int) bool {
-	si2, ok := sii2.(StringIndex)
-	if !ok {
-		panic("Both indices must be StringIndex")
-	}
+	si2 := sii2.(StringIndex)
 	return si[i] < si2[j]
 }
 

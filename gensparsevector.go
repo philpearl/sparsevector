@@ -5,6 +5,12 @@ import (
 	"sort"
 )
 
+// GenSparseVector is a sparse vector whose rows can be identified by any type that can
+// be ordered. For example, the rows could be usernames, URLs, document names.
+//
+// Note that using this with a simple uint32 index carries an approxiamate 5x performance
+// penalty relative to using a SparseVector. However it is faster than MapSparseVector for
+// the vector lengths we have benchmarked
 type GenSparseVector struct {
 	index    VectorIndex
 	values   []Value
@@ -12,22 +18,32 @@ type GenSparseVector struct {
 	magClean bool
 }
 
+// NewGenSparseVector creates a new GenSparseVector. You should provide parallel arrays of
+// indicies and values. Note that NewGenSparseVector will sort these in place.
 func NewGenSparseVector(index VectorIndex, values []Value) *GenSparseVector {
 	// Want to sort the index and values at the same time
 	v := &GenSparseVector{index: index, values: values}
-	sort.Sort(v)
+
+	gsv := genSparseVectorSort{v}
+	sort.Sort(gsv)
 	return v
 }
 
-func (v *GenSparseVector) Swap(i, j int) {
+type genSparseVectorSort struct {
+	*GenSparseVector
+}
+
+func (v genSparseVectorSort) Swap(i, j int) {
 	v.index.Swap(i, j)
 	v.values[i], v.values[j] = v.values[j], v.values[i]
 }
 
-func (v *GenSparseVector) Len() int { return len(v.values) }
+func (v genSparseVectorSort) Len() int { return len(v.values) }
 
-func (v *GenSparseVector) Less(i, j int) bool { return v.index.Less(i, j) }
+func (v genSparseVectorSort) Less(i, j int) bool { return v.index.Less(i, j) }
 
+// Dot calculates the dot-product of this vector and another.
+// Both vectors should be GenSparseVectors
 func (sv1 *GenSparseVector) Dot(svi2 Vector) Value {
 	sv2 := svi2.(*GenSparseVector)
 
@@ -49,6 +65,7 @@ func (sv1 *GenSparseVector) Dot(svi2 Vector) Value {
 	return dp
 }
 
+// Mag returns the magnitude of this vector
 func (v *GenSparseVector) Mag() Value {
 	if !v.magClean {
 		// Could use v1.Dot(v2), but this is more efficient
@@ -63,6 +80,8 @@ func (v *GenSparseVector) Mag() Value {
 	return v.mag
 }
 
+// Cos calculates the cosine between this vector and another.
+// Both vectors must be GenSparseVectors
 func (sv1 *GenSparseVector) Cos(svi2 Vector) Value {
 	sv2 := svi2.(*GenSparseVector)
 	return sv1.Dot(sv2) / (sv1.Mag() * sv2.Mag())
@@ -113,4 +132,5 @@ func (sv *GenSparseVector) IterUpdate(f func(index interface{}, value Value) Val
 func (sv *GenSparseVector) GetIndex() VectorIndex { return sv.index }
 
 // Assert GenSparseVector implements Vector
-var _ Vector = (*GenSparseVector)(nil)
+var _ SparseVector = (*GenSparseVector)(nil)
+var _ IndexSparseVector = (*GenSparseVector)(nil)
