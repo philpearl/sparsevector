@@ -41,5 +41,6 @@ func ExampleStringIndex() {
 
 	// Naive similarity measure between these two films
 	cos := starwars.Cos(battlestargalactica)
-	fmt.Sprintf("Similarity is %f", cos)
+	fmt.Printf("Similarity is %f", cos)
+	// Output: Similarity is 0.928748
 }
