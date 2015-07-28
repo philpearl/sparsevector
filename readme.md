@@ -1,6 +1,6 @@
 # SparseVector
 
-Efficient sparse vector implemenations in Go.
+Efficient sparse vector implementations in Go.
 
 [![Build Status](https://travis-ci.org/philpearl/sparsevector.svg)](https://travis-ci.org/philpearl/sparsevector) [![GoDoc](https://godoc.org/github.com/philpearl/sparsevector?status.svg)](https://godoc.org/github.com/philpearl/sparsevector)
 
