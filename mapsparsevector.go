@@ -62,3 +62,35 @@ func (m1 *MapSparseVector) Dot(v2 Vector) Value {
 func (m1 *MapSparseVector) Cos(v2 Vector) Value {
 	return m1.Dot(v2) / (m1.Mag() * v2.Mag())
 }
+
+func (m1 *MapSparseVector) Add(v2 Vector) Vector {
+	m2 := v2.(*MapSparseVector)
+
+	// Build a map to back the output vector.
+	// It should be at least as big as the biggest of our
+	// two vectors
+	l := len(m1.values)
+	if l < len(m2.values) {
+		l = len(m2.values)
+	}
+	om := make(map[uint32]Value, l)
+
+	// Copy all the values from m1
+	for k, v := range m1.values {
+		om[k] = v
+	}
+
+	// Add values from m2
+	for k, v := range m2.values {
+		ev, ok := m1.values[k]
+		if ok {
+			om[k] = ev + v
+		} else {
+			om[k] = v
+		}
+	}
+
+	return &MapSparseVector{
+		values: om,
+	}
+}
