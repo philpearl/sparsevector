@@ -6,6 +6,8 @@ Efficient sparse vector implemenations in Go.
 
 ## What's included?
 
+|    |    |
+| ---| ---|
 | SparseVectorUint32 | Sparse Vector with uint32 indices and Value values implemented by parallel ordered lists of indices and values |
 | GenSparseVector | Sparse Vector with generic indices and a parallel ordered list of values. The index must implement the VectorIndex interface, and hence be sortable. |
 | MapSparseVector | A Sparse Vector with uint32 indices and Value values implemented using a map |
@@ -19,4 +21,12 @@ Benchmarks are included for uint32 versions of all the Sparse Vector implementat
 
 ## What can you do with it?
 
-Vector stuff.  You know. Like with vectors.
+I've focused on what I need for similarity calculations, so at least at time of writing the vectors do cosine and dot-product, but you can't yet add two vectors.
+
+## License
+
+MIT license in LICENSE.txt
+
+## Contributing
+
+Drop a pull request if you'd like to contribute. 
