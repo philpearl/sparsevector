@@ -4,10 +4,6 @@ import (
 	"sort"
 )
 
-// Value is the type we use for vector values. We defined a type so we can easily
-// change types, until such times as our Go overlords figure out generics.
-type Value float32
-
 // Vector is a general interface to a vector. Our focus on similarity calculations
 // means that so far we've only defined cosine, magnitude and dot-product methods.
 type Vector interface {
@@ -19,6 +15,12 @@ type Vector interface {
 
 	// Dot calculates the dot product of two vectors
 	Dot(v Vector) Value
+
+	// Add adds a vector to this one
+	Add(v Vector) Vector
+
+	// Sub subtracts a vector from this one
+	Sub(v Vector) Vector
 }
 
 // SparseVector extends the Vector interface to include some functions that only
@@ -69,4 +71,10 @@ type VectorIndex interface {
 
 	// GetAtLocation returns the index value currently at location i
 	GetAtLocation(i int) interface{}
+
+	// New creates a new index of this type, using l as a capacity hint
+	New(l int) VectorIndex
+
+	// Append adds an index value to this index
+	Append(idx interface{}) VectorIndex
 }

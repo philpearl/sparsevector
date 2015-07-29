@@ -64,6 +64,14 @@ func (m1 *MapSparseVector) Cos(v2 Vector) Value {
 }
 
 func (m1 *MapSparseVector) Add(v2 Vector) Vector {
+	return m1.runOp(v2, AddOp)
+}
+
+func (m1 *MapSparseVector) Sub(v2 Vector) Vector {
+	return m1.runOp(v2, SubOp)
+}
+
+func (m1 *MapSparseVector) runOp(v2 Vector, op ValueOp) Vector {
 	m2 := v2.(*MapSparseVector)
 
 	// Build a map to back the output vector.
@@ -84,9 +92,9 @@ func (m1 *MapSparseVector) Add(v2 Vector) Vector {
 	for k, v := range m2.values {
 		ev, ok := m1.values[k]
 		if ok {
-			om[k] = ev + v
+			om[k] = op(ev, v)
 		} else {
-			om[k] = v
+			om[k] = op(0, v)
 		}
 	}
 

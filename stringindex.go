@@ -18,5 +18,13 @@ func (si StringIndex) GetAtLocation(location int) interface{} {
 	return si[location]
 }
 
+func (si StringIndex) New(l int) VectorIndex {
+	return make(StringIndex, 0, l)
+}
+
+func (si StringIndex) Append(idx interface{}) VectorIndex {
+	return append(si, idx.(string))
+}
+
 // Assert StringIndex implements VectorIndex
 var _ VectorIndex = (StringIndex)(nil)

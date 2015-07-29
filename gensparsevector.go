@@ -96,6 +96,64 @@ func (sv *GenSparseVector) Mean() Value {
 	return total / Value(len(sv.values))
 }
 
+func (sv1 *GenSparseVector) Add(v2 Vector) Vector {
+	return sv1.runOp(v2, AddOp)
+}
+
+func (sv1 *GenSparseVector) Sub(v2 Vector) Vector {
+	return sv1.runOp(v2, SubOp)
+}
+
+func (sv1 *GenSparseVector) runOp(v2 Vector, op ValueOp) Vector {
+	sv2 := v2.(*GenSparseVector)
+
+	var i1, i2 int
+	sv1l := sv1.index.Len()
+	sv2l := sv2.index.Len()
+
+	// Create index and value array to back the result
+	l := sv1l
+	if l < sv2l {
+		l = sv2l
+	}
+	oi := sv1.index.New(l)
+	ov := make([]Value, 0, l)
+
+	sv1_exp := false
+	sv2_exp := false
+
+	for {
+		if i1 >= sv1l {
+			sv1_exp = true // sv1 is exhausted
+		}
+		if i2 >= sv2l {
+			sv2_exp = true // sv2 is exhausted
+			if sv1_exp {
+				break
+			}
+		}
+		if sv2_exp || (!sv1_exp && sv1.index.LessThanOther(i1, sv2.index, i2)) {
+			oi = oi.Append(sv1.index.GetAtLocation(i1))
+			ov = append(ov, op(sv1.values[i1], 0))
+			i1 += 1
+		} else if sv1_exp || (!sv2_exp && sv2.index.LessThanOther(i2, sv1.index, i1)) {
+			oi = oi.Append(sv2.index.GetAtLocation(i2))
+			ov = append(ov, op(0, sv2.values[i2]))
+			i2 += 1
+		} else {
+			oi = oi.Append(sv1.index.GetAtLocation(i1))
+			ov = append(ov, op(sv1.values[i1], sv2.values[i2]))
+			i1 += 1
+			i2 += 1
+		}
+	}
+
+	return &GenSparseVector{
+		index:  oi,
+		values: ov,
+	}
+}
+
 // AddConst adds a constant value to each of the present values in the sparse
 // vector
 func (sv *GenSparseVector) AddConst(toAdd Value) {

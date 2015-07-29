@@ -21,7 +21,9 @@ Benchmarks are included for uint32 versions of all the Sparse Vector implementat
 
 ## What can you do with it?
 
-I've focused on what I need for similarity calculations, so at least at time of writing the vectors do cosine and dot-product, but you can't yet add two vectors.
+I've focused on what I need for similarity calculations, so the vectors do cosine and dot-product. I've also included adding and subtracting vectors and constant values. You can discover the mean of the present values, and also iterate and perform operations on the elements present in the vectors.
+
+There's no function to multiply by a constant, which seems a foolish omission.
 
 ## License
 

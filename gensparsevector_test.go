@@ -136,3 +136,94 @@ func TestGenSparseVector(t *testing.T) {
 		t.Fatalf("that didn't work")
 	}
 }
+
+func TestAddGenUint32SparseVector(t *testing.T) {
+
+	tests := []struct {
+		v1  *GenSparseVector
+		v2  *GenSparseVector
+		exp *GenSparseVector
+	}{{
+		v1:  NewGenSparseVector(Uint32Index{1, 2, 3}, []Value{4, 5, 6}),
+		v2:  NewGenSparseVector(Uint32Index{1, 3, 4}, []Value{4, 5, 6}),
+		exp: NewGenSparseVector(Uint32Index{1, 2, 3, 4}, []Value{8, 5, 11, 6}),
+	}, {
+		v1:  NewGenSparseVector(Uint32Index{}, []Value{}),
+		v2:  NewGenSparseVector(Uint32Index{1, 3, 4}, []Value{4, 5, 6}),
+		exp: NewGenSparseVector(Uint32Index{1, 3, 4}, []Value{4, 5, 6}),
+	}, {
+		v1:  NewGenSparseVector(Uint32Index{2}, []Value{7}),
+		v2:  NewGenSparseVector(Uint32Index{1, 3, 4}, []Value{4, 5, 6}),
+		exp: NewGenSparseVector(Uint32Index{1, 2, 3, 4}, []Value{4, 7, 5, 6}),
+	}, {
+		v1:  NewGenSparseVector(Uint32Index{1, 3, 4}, []Value{4, 5, 6}),
+		v2:  NewGenSparseVector(Uint32Index{1, 3, 4}, []Value{4, 5, 6}),
+		exp: NewGenSparseVector(Uint32Index{1, 3, 4}, []Value{8, 10, 12}),
+	}, {
+		v1:  NewGenSparseVector(Uint32Index{1, 3, 4}, []Value{4, 5, 6}),
+		v2:  NewGenSparseVector(Uint32Index{1, 3}, []Value{4, 5}),
+		exp: NewGenSparseVector(Uint32Index{1, 3, 4}, []Value{8, 10, 6}),
+	}, {
+		v1:  NewGenSparseVector(Uint32Index{1, 3, 4}, []Value{4, 5, 6}),
+		v2:  NewGenSparseVector(Uint32Index{}, []Value{}),
+		exp: NewGenSparseVector(Uint32Index{1, 3, 4}, []Value{4, 5, 6}),
+	},
+	}
+
+	for i, test := range tests {
+		t.Logf("test %d", i)
+		v3 := test.v1.Add(test.v2)
+		v4 := test.v2.Add(test.v1)
+
+		if !reflect.DeepEqual(test.exp, v3) {
+			t.Errorf("Test %d. Sum not as expected. Have %v", i, v3)
+		}
+		if !reflect.DeepEqual(test.exp, v4) {
+			t.Errorf("Test %d. Reverse Sum not as expected. Have %v", i, v4)
+		}
+
+	}
+}
+
+func TestSubGenUint32SparseVector(t *testing.T) {
+
+	tests := []struct {
+		v1  *GenSparseVector
+		v2  *GenSparseVector
+		exp *GenSparseVector
+	}{{
+		v1:  NewGenSparseVector(Uint32Index{1, 2, 3}, []Value{4, 5, 6}),
+		v2:  NewGenSparseVector(Uint32Index{1, 3, 4}, []Value{4, 5, 6}),
+		exp: NewGenSparseVector(Uint32Index{1, 2, 3, 4}, []Value{0, 5, 1, -6}),
+	}, {
+		v1:  NewGenSparseVector(Uint32Index{}, []Value{}),
+		v2:  NewGenSparseVector(Uint32Index{1, 3, 4}, []Value{4, 5, 6}),
+		exp: NewGenSparseVector(Uint32Index{1, 3, 4}, []Value{-4, -5, -6}),
+	}, {
+		v1:  NewGenSparseVector(Uint32Index{2}, []Value{7}),
+		v2:  NewGenSparseVector(Uint32Index{1, 3, 4}, []Value{4, 5, 6}),
+		exp: NewGenSparseVector(Uint32Index{1, 2, 3, 4}, []Value{-4, 7, -5, -6}),
+	}, {
+		v1:  NewGenSparseVector(Uint32Index{1, 3, 4}, []Value{4, 5, 6}),
+		v2:  NewGenSparseVector(Uint32Index{1, 3, 4}, []Value{4, 5, 6}),
+		exp: NewGenSparseVector(Uint32Index{1, 3, 4}, []Value{0, 0, 0}),
+	}, {
+		v1:  NewGenSparseVector(Uint32Index{1, 3, 4}, []Value{4, 5, 6}),
+		v2:  NewGenSparseVector(Uint32Index{1, 3}, []Value{4, 5}),
+		exp: NewGenSparseVector(Uint32Index{1, 3, 4}, []Value{0, 0, 6}),
+	}, {
+		v1:  NewGenSparseVector(Uint32Index{1, 3, 4}, []Value{4, 5, 6}),
+		v2:  NewGenSparseVector(Uint32Index{}, []Value{}),
+		exp: NewGenSparseVector(Uint32Index{1, 3, 4}, []Value{4, 5, 6}),
+	},
+	}
+
+	for i, test := range tests {
+		t.Logf("test %d", i)
+		v3 := test.v1.Sub(test.v2)
+
+		if !reflect.DeepEqual(test.exp, v3) {
+			t.Errorf("Test %d. Sub not as expected. Have %v", i, v3)
+		}
+	}
+}

@@ -18,5 +18,13 @@ func (si Uint32Index) GetAtLocation(location int) interface{} {
 	return si[location]
 }
 
+func (su Uint32Index) New(l int) VectorIndex {
+	return make(Uint32Index, 0, l)
+}
+
+func (si Uint32Index) Append(idx interface{}) VectorIndex {
+	return append(si, idx.(uint32))
+}
+
 // Assert Uint32Index implements VectorIndex
 var _ VectorIndex = (Uint32Index)(nil)

@@ -96,7 +96,15 @@ func (sv1 *SparseVectorUint32) Dot(sv2in Vector) Value {
 	return dp
 }
 
-func (sv1 *SparseVectorUint32) Add(sv2in Vector) *SparseVectorUint32 {
+func (sv1 *SparseVectorUint32) Add(sv2 Vector) Vector {
+	return sv1.runOp(sv2, AddOp)
+}
+
+func (sv1 *SparseVectorUint32) Sub(sv2 Vector) Vector {
+	return sv1.runOp(sv2, SubOp)
+}
+
+func (sv1 *SparseVectorUint32) runOp(sv2in Vector, op ValueOp) Vector {
 	sv2 := sv2in.(*SparseVectorUint32)
 
 	var i1, i2 int
@@ -131,17 +139,17 @@ func (sv1 *SparseVectorUint32) Add(sv2in Vector) *SparseVectorUint32 {
 
 		if sv1i < sv2i {
 			oi = append(oi, sv1i)
-			ov = append(ov, sv1.values[i1])
+			ov = append(ov, op(sv1.values[i1], 0))
 			i1 += 1
 
 		} else if sv2i < sv1i {
 			oi = append(oi, sv2i)
-			ov = append(ov, sv2.values[i2])
+			ov = append(ov, op(0, sv2.values[i2]))
 			i2 += 1
 
 		} else {
 			oi = append(oi, sv2i)
-			ov = append(ov, sv2.values[i2]+sv1.values[i1])
+			ov = append(ov, op(sv1.values[i1], sv2.values[i2]))
 			i1 += 1
 			i2 += 1
 		}
