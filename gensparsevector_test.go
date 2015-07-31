@@ -227,3 +227,44 @@ func TestSubGenUint32SparseVector(t *testing.T) {
 		}
 	}
 }
+
+func TestMultGenUint32SparseVector(t *testing.T) {
+	tests := []struct {
+		v   *GenSparseVector
+		l   Value
+		exp *GenSparseVector
+	}{{
+		v:   NewGenSparseVector(Uint32Index{1, 2, 3}, []Value{4, 5, 6}),
+		l:   1,
+		exp: NewGenSparseVector(Uint32Index{1, 2, 3}, []Value{4, 5, 6}),
+	}, {
+		v:   NewGenSparseVector(Uint32Index{}, []Value{}),
+		l:   1,
+		exp: NewGenSparseVector(Uint32Index{}, []Value{}),
+	}, {
+		v:   NewGenSparseVector(Uint32Index{2}, []Value{7}),
+		l:   2,
+		exp: NewGenSparseVector(Uint32Index{2}, []Value{14}),
+	}, {
+		v:   NewGenSparseVector(Uint32Index{1, 3, 4}, []Value{4, 5, 6}),
+		l:   0,
+		exp: NewGenSparseVector(Uint32Index{1, 3, 4}, []Value{0, 0, 0}),
+	}, {
+		v:   NewGenSparseVector(Uint32Index{1, 3, 4}, []Value{4, 5, 6}),
+		l:   -1,
+		exp: NewGenSparseVector(Uint32Index{1, 3, 4}, []Value{-4, -5, -6}),
+	}, {
+		v:   NewGenSparseVector(Uint32Index{1, 3, 4}, []Value{4, 5, 6}),
+		l:   137.4,
+		exp: NewGenSparseVector(Uint32Index{1, 3, 4}, []Value{549.6, 687, 824.39996}),
+	},
+	}
+
+	for i, test := range tests {
+		test.v.Mult(test.l)
+
+		if !reflect.DeepEqual(test.exp, test.v) {
+			t.Errorf("Test %d. Sum not as expected. Have %v", i, test.v)
+		}
+	}
+}

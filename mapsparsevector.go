@@ -102,3 +102,9 @@ func (m1 *MapSparseVector) runOp(v2 Vector, op ValueOp) Vector {
 		values: om,
 	}
 }
+
+func (m *MapSparseVector) Mult(l Value) {
+	for k, v := range m.values {
+		m.values[k] = l * v
+	}
+}

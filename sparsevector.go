@@ -191,6 +191,13 @@ func (sv *SparseVectorUint32) SubConst(toSub Value) {
 	sv.AddConst(-toSub)
 }
 
+// Mult multiplies the vector by a constant l. The vector is modified in place
+func (sv *SparseVectorUint32) Mult(l Value) {
+	for i, v := range sv.values {
+		sv.values[i] = l * v
+	}
+}
+
 // Iter lets you iterate over the members of the sparse vector
 func (sv *SparseVectorUint32) Iter(f func(index uint32, value Value)) {
 	for i, index := range sv.indices {

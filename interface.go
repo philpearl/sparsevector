@@ -21,6 +21,9 @@ type Vector interface {
 
 	// Sub subtracts a vector from this one
 	Sub(v Vector) Vector
+
+	// Multiply by a constant.  Vector is modified in place
+	Mult(l Value)
 }
 
 // SparseVector extends the Vector interface to include some functions that only

@@ -169,6 +169,14 @@ func (sv *GenSparseVector) SubConst(toSub Value) {
 	sv.AddConst(-toSub)
 }
 
+// Mult multiplies the vector by a constant.
+func (sv *GenSparseVector) Mult(l Value) {
+	for i, v := range sv.values {
+		sv.values[i] = l * v
+	}
+	sv.magClean = false
+}
+
 // Iter lets you iterate over the members of the sparse vector
 func (sv *GenSparseVector) Iter(f func(index interface{}, value Value)) {
 	for i, value := range sv.values {

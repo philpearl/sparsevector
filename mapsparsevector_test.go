@@ -87,3 +87,44 @@ func TestAddMapSparseVector(t *testing.T) {
 		}
 	}
 }
+
+func TestMultMapSparseVector(t *testing.T) {
+	tests := []struct {
+		v   *MapSparseVector
+		l   Value
+		exp *MapSparseVector
+	}{{
+		v:   NewMapSparseVector([]uint32{1, 2, 3}, []Value{4, 5, 6}),
+		l:   1,
+		exp: NewMapSparseVector([]uint32{1, 2, 3}, []Value{4, 5, 6}),
+	}, {
+		v:   NewMapSparseVector([]uint32{}, []Value{}),
+		l:   1,
+		exp: NewMapSparseVector([]uint32{}, []Value{}),
+	}, {
+		v:   NewMapSparseVector([]uint32{2}, []Value{7}),
+		l:   2,
+		exp: NewMapSparseVector([]uint32{2}, []Value{14}),
+	}, {
+		v:   NewMapSparseVector([]uint32{1, 3, 4}, []Value{4, 5, 6}),
+		l:   0,
+		exp: NewMapSparseVector([]uint32{1, 3, 4}, []Value{0, 0, 0}),
+	}, {
+		v:   NewMapSparseVector([]uint32{1, 3, 4}, []Value{4, 5, 6}),
+		l:   -1,
+		exp: NewMapSparseVector([]uint32{1, 3, 4}, []Value{-4, -5, -6}),
+	}, {
+		v:   NewMapSparseVector([]uint32{1, 3, 4}, []Value{4, 5, 6}),
+		l:   137.4,
+		exp: NewMapSparseVector([]uint32{1, 3, 4}, []Value{549.6, 687, 824.39996}),
+	},
+	}
+
+	for i, test := range tests {
+		test.v.Mult(test.l)
+
+		if !reflect.DeepEqual(test.exp, test.v) {
+			t.Errorf("Test %d. Sum not as expected. Have %v", i, test.v)
+		}
+	}
+}
